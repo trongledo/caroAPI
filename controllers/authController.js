@@ -1,9 +1,10 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const JWT = require('jsonwebtoken');
+const passport = require('passport');
 const { registerValidation, loginValidation } = require('../models/validation');
 
-// REGISTER CONTROLLER
+// REGISTER
 exports.register = async (req, res) => {
   const { error } = registerValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -30,23 +31,43 @@ exports.register = async (req, res) => {
   }
 };
 
-// LOGIN CONTROLLER
+// LOGIN
 exports.login = async (req, res) => {
-  const { error } = loginValidation(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  passport.authenticate('local', { session: false }, (err, user, info) => {
+    console.log(err);
+    if (err || !user) {
+      return res.status(400).json({
+        message: info ? info.message : 'Login failed',
+        user: user
+      });
+    }
 
-  // Kiem tra email co ton tai?
-  const userCheck = await User.findOne({ email: req.body.email });
-  if (!userCheck) return res.status(400).send('Email does not exist');
+    req.login(user, { session: false }, err => {
+      if (err) {
+        res.send(err);
+      }
 
-  const validatePass = await bcrypt.compare(
-    req.body.password,
-    userCheck.password
-  );
-  if (!validatePass) return res.status(400).send('Invalid password');
+      const token = JWT.sign({ userID: user._id }, process.env.TOKEN_SECRET);
 
-  // Tao Token
-  const token = JWT.sign({ userId: userCheck._id }, process.env.TOKEN_SECRET);
+      return res.json({ message: info.message, user, token });
+    });
+  })(req, res);
 
-  res.header('auth-token', token).send(token);
+  //   const { error } = loginValidation(req.body);
+  //   if (error) return res.status(400).send(error.details[0].message);
+
+  //   // Kiem tra email co ton tai?
+  //   const userCheck = await User.findOne({ email: req.body.email });
+  //   if (!userCheck) return res.status(400).send('Email does not exist');
+
+  //   const validatePass = await bcrypt.compare(
+  //     req.body.password,
+  //     userCheck.password
+  //   );
+  //   if (!validatePass) return res.status(400).send('Invalid password');
+
+  //   // Tao Token
+  //   const token = JWT.sign({ userId: userCheck._id }, process.env.TOKEN_SECRET);
+
+  //   res.header('auth-token', token).send(token);
 };
