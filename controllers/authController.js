@@ -7,11 +7,11 @@ const { registerValidation, loginValidation } = require('../models/validation');
 // REGISTER
 exports.register = async (req, res) => {
   const { error } = registerValidation(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error) return res.status(400).json(error.details[0].message);
 
   // Kiem tra email bi trung?
   const userCheck = await User.findOne({ email: req.body.email });
-  if (userCheck) return res.status(400).send('Email already exists');
+  if (userCheck) return res.status(400).json('Email already exists');
 
   // Ma hoa mat khau
   const salt = await bcrypt.genSalt();
@@ -25,9 +25,9 @@ exports.register = async (req, res) => {
 
   try {
     const savedUser = await newUser.save();
-    res.send({ newUser: newUser._id });
+    res.json({ newUser: newUser._id });
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).json(err);
   }
 };
 
