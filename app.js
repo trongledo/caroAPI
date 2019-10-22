@@ -6,7 +6,6 @@ var logger = require('morgan');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const passport = require('passport');
-cors = require('cors');
 
 require('./passport');
 
@@ -29,12 +28,16 @@ mongoose.connect(
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
-app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
 
 app.use('/', indexRouter);
 app.use('/me', passport.authenticate('jwt', { session: false }), usersRouter);
