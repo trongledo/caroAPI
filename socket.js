@@ -11,16 +11,15 @@ module.exports = function(io) {
     socket.on('join', ({ name, email }, callback) => {
       let newUser;
       if (!room) {
-        console.log('Khong co san room');
         room = socket.id;
         newUser = addUser({ id: socket.id, name, email, room });
         socket.emit('message', {
           user: 'admin',
           email: 'admin',
-          message: `System: Finding opponent...`
+          message: `#system: finding opponent...`
         });
+        socket.emit('playerTurn', true);
       } else {
-        console.log('Co san room');
         const host = getUser(room);
 
         if (host) {
@@ -28,8 +27,9 @@ module.exports = function(io) {
           socket.emit('message', {
             user: 'admin',
             email: 'admin',
-            message: `System: Joined ${host.name}'s room.`
+            message: `#system: joined ${host.name}'s room.`
           });
+          socket.emit('playerTurn', false);
           room = null;
         } else {
           room = socket.id;
@@ -37,8 +37,9 @@ module.exports = function(io) {
           socket.emit('message', {
             user: 'admin',
             email: 'admin',
-            message: `System: Finding opponent...`
+            message: `#system: finding opponent...`
           });
+          socket.emit('playerTurn', true);
         }
       }
 
@@ -76,6 +77,27 @@ module.exports = function(io) {
       callback();
     });
 
+    socket.on('sendHistory', ({ squares, i, xIsNext }) => {
+      const user = getUser(socket.id);
+      if (user) {
+        io.to(user.room).emit('history', { squares: squares, i: i, xIsNext });
+      }
+    });
+
+    socket.on('passTurn', playerTurn => {
+      const user = getUser(socket.id);
+      if (user) {
+        io.to(user.room).emit('playerTurn', playerTurn);
+      }
+    });
+
+    socket.on('passUndoRequest', undoRequest => {
+      const user = getUser(socket.id);
+      if (user) {
+        io.to(user.room).emit('undoRequest', undoRequest);
+      }
+    });
+
     console.log('A user connected');
 
     // user++;
@@ -104,7 +126,8 @@ module.exports = function(io) {
 
       if (removedUser) {
         io.to(removedUser.room).emit('message', {
-          user: 'Admin',
+          user: 'admin',
+          email: 'admin',
           message: `${removedUser.name} has left.`
         });
       }
