@@ -8,11 +8,11 @@ module.exports = function(io) {
     // userCount++;
     // room = userCount % 2 ? userCount : userCount - 1;
 
-    socket.on('join', ({ name, email }, callback) => {
+    socket.on('join', ({ name, email, image }, callback) => {
       let newUser;
       if (!room) {
         room = socket.id;
-        newUser = addUser({ id: socket.id, name, email, room });
+        newUser = addUser({ id: socket.id, name, email, image, room });
         socket.emit('message', {
           user: 'admin',
           email: 'admin',
@@ -23,7 +23,7 @@ module.exports = function(io) {
         const host = getUser(room);
 
         if (host) {
-          newUser = addUser({ id: socket.id, name, email, room });
+          newUser = addUser({ id: socket.id, name, email, image, room });
           socket.emit('message', {
             user: 'admin',
             email: 'admin',
@@ -33,7 +33,7 @@ module.exports = function(io) {
           room = null;
         } else {
           room = socket.id;
-          newUser = addUser({ id: socket.id, name, email, room });
+          newUser = addUser({ id: socket.id, name, email, image, room });
           socket.emit('message', {
             user: 'admin',
             email: 'admin',
@@ -95,6 +95,20 @@ module.exports = function(io) {
       const user = getUser(socket.id);
       if (user) {
         io.to(user.room).emit('undoRequest', undoRequest);
+      }
+    });
+
+    socket.on('passSurrenderRequest', surrenderRequest => {
+      const user = getUser(socket.id);
+      if (user) {
+        io.to(user.room).emit('surrenderRequest', surrenderRequest);
+      }
+    });
+
+    socket.on('sendWinnerInfo', winnerInfo => {
+      const user = getUser(socket.id);
+      if (user) {
+        io.to(user.room).emit('winnerInfo', winnerInfo);
       }
     });
 
