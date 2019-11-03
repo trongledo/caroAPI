@@ -21,7 +21,8 @@ const userSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    default: 'acbsdas'
+    default:
+      'https://cdn3.iconfinder.com/data/icons/vector-icons-6/96/256-512.png'
   },
   date: {
     type: Date,
