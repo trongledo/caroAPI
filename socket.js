@@ -12,7 +12,6 @@ module.exports = function(io) {
       let newUser;
       if (!room) {
         room = socket.id;
-        console.log(image);
         newUser = addUser({ id: socket.id, name, email, image, room });
         socket.emit('message', {
           user: 'admin',
