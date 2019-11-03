@@ -31,5 +31,24 @@ const loginValidation = data => {
   return Joi.validate(data, schema);
 };
 
+const updateValidation = data => {
+  const schema = {
+    name: Joi.string()
+      .required()
+      .min(6),
+    email: Joi.string()
+      .required()
+      .min(6)
+      .email(),
+    password: Joi.string()
+      .required()
+      .min(6),
+    image: Joi.string()
+  };
+
+  return Joi.validate(data, schema);
+};
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
+module.exports.updateValidation = updateValidation;

@@ -33,34 +33,6 @@ passport.use(
       } catch (err) {
         return cb(err);
       }
-
-      //   return User.findOne({ email })
-      //     .then(user => {
-      //       if (!user) {
-      //         return cb(null, false, { message: 'Incorrect email or password.' });
-      //       }
-
-      //       bcrypt
-      //         .compare(password, user.password)
-      //         .then(validatePass => {
-      //           if (!validatePass) {
-      //             return cb(null, false, {
-      //               message: 'Incorrect password.'
-      //             });
-      //           }
-      //           if (validatePass) {
-      //             return cb(null, user, {
-      //               message: 'Logged In Successfully'
-      //             });
-      //           }
-      //         })
-      //         .catch(err => {
-      //           return cb(err);
-      //         });
-      //     })
-      //     .catch(err => {
-      //       return cb(err);
-      //     });
     }
   )
 );

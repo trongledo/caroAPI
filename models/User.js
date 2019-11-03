@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
     min: 6,
     max: 255
   },
+  image: {
+    type: String,
+    default: 'acbsdas'
+  },
   date: {
     type: Date,
     default: Date.now
