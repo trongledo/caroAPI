@@ -23,8 +23,7 @@ exports.register = async (req, res) => {
   const newUser = new User({
     name: req.body.name,
     email: req.body.email,
-    password: hashedPassword,
-    image: 'https://image.flaticon.com/icons/svg/206/206879.svg'
+    password: hashedPassword
   });
 
   try {

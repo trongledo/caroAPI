@@ -19,11 +19,6 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-setInterval(function() {
-  http.get('https://co-caro2.herokuapp.com');
-  http.get('https://cocaro-api.herokuapp.com');
-}, 300000); // every 5 minutes (300000)
-
 var server = http.createServer(app);
 const io = require('socket.io')(server, {
   pingInterval: 60000
